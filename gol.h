@@ -17,8 +17,8 @@ void print_statistics(struct universe *u);
 void read_in_file(FILE *infile, struct universe *u)
 {
     int i=0, j=0;
-    while (fgets(u[0].cells[i], 512, infile)) {
-        u[0].cells[i][strlen(u[0].cells[i])-1] = '\0';
+    while (fgets(u -> cells[i], 512, infile)) {
+        u -> cells[i][strlen(u -> cells[i])-1] = '\0';
         i++;
     }
 
