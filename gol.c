@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "gol.h"
 
+void free_cells(int r, struct universe *v);
+
 void main()
 {
     struct universe v;
@@ -12,8 +14,8 @@ void main()
     read_in_file(fp, &v);
     fclose(fp);
     int r = 0, c = 0;
-    // Why doesn't this one work?? 
-    // while (v.cells[0][c] != '\n') 
+    // Why doesn't this one work??
+    // while (v.cells[0][c] != '\n')
     while ((v.cells[0][c] == '.') | (v.cells[0][c] == '*'))
     {
         c++;
@@ -22,4 +24,19 @@ void main()
     {
         r++;
     }
+    printf("Rows: %d, Columns: %d\n", r, c);
+
+    free_cells(r, &v);
+
+    exit(0);
+}
+
+void free_cells(int r, struct universe *v)
+{
+    for (int i = 0; i < r; i++)
+    {
+        free(v->cells[i]);
+    }
+    free(v->cells);
+    printf("Freed memory!\n");
 }
