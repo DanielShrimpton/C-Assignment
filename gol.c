@@ -100,3 +100,13 @@ void write_out_file(FILE *outfile, struct universe *u)
         fputs(u->cells[i], outfile);
     }
 }
+
+int is_alive(struct universe *u, int column, int row)
+{
+    if (u->cells[row-1][column-1] == '*')
+    {
+        return 1;
+    } else {
+        return 0;
+    }
+}
