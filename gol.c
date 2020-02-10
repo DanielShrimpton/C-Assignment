@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "gol.h"
 
-void free_cells(int r, struct universe *v);
+void free_cells(struct universe *v);
 
 void main()
 {
@@ -13,33 +13,40 @@ void main()
     fp = fopen("glider.txt", "r");
     read_in_file(fp, &v);
     fclose(fp);
-    int r = 0, c = 0;
-    // Why doesn't this one work??
-    // while (v.cells[0][c] != '\n')
-    while ((v.cells[0][c] == '.') | (v.cells[0][c] == '*'))
+    v.r = 0;
+    v.c = 0;
+    // while (v.cells[0][v.c] != '\n')
+    while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
     {
-        c++;
+        v.c++;        
     }
-    while ((v.cells[r] != NULL) && (*v.cells[r] != '\0'))
+    while ((v.cells[v.r] != NULL) && (*v.cells[v.r] != '\0'))
     {
-        r++;
+        v.r++;
     }
-    printf("Rows: %d, Columns: %d\n", r, c);
+    printf("Rows: %d, Columns: %d\n", v.r, v.c);
 
-    free_cells(r, &v);
+    FILE *out_file_pointer;
+    out_file_pointer = fopen("gilder-out.txt", "w");
+    write_out_file(out_file_pointer, &v);
+    fclose(out_file_pointer);
+
+    free_cells(&v);
 
     exit(0);
 }
 
-void free_cells(int r, struct universe *v)
+void free_cells(struct universe *v)
 {
-    for (int i = 0; i < r; i++)
+    for (int i = 0; i < v->r; i++)
     {
         free(v->cells[i]);
         v->cells[i] = NULL; // Best practice
     }
     free(v->cells);
     v->cells = NULL;
+    v->c = 0;
+    v->r = 0;
     printf("Freed memory!\n");
 }
 
@@ -50,19 +57,33 @@ void read_in_file(FILE *infile, struct universe *u)
     {
         u->cells[i] = (char *)calloc(512, sizeof(char));
     }
-    // arr[0] = (char*)calloc(512, sizeof(char));
     int i = 0, j = 0;
     int size;
     bool first = true;
     while (fgets(u->cells[i], 512, infile))
     {
+        u->r = i;
         size = strlen(u->cells[i]);
         if (first)
         {
+            u->c = size - 1;
             u->cells[i] = (char *)realloc(u->cells[i], size * sizeof(char));
             first = false;
         }
-        u->cells[i][strlen(u->cells[i]) - 1] = '\0';
+        if (size != u->c + 1) {
+            printf("Poorly formatted file!\n");
+            free_cells(u);
+            exit(1);
+        }
+        for (int k=0; k<size; k++) {
+            if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n'))) {
+                printf("%c\n", u->cells[i][k]);
+                printf("Poorly formatted file!\n");
+                free_cells(u);
+                exit(1);
+            }
+        }
+        // u->cells[i][strlen(u->cells[i]) - 1] = '\0';
         u->cells = (char **)realloc(u->cells, (i + 2) * sizeof(char *));
         u->cells[i + 1] = (char *)calloc(size, sizeof(char));
         i++;
@@ -70,14 +91,12 @@ void read_in_file(FILE *infile, struct universe *u)
 
     u->cells[i] = (char *)realloc(u->cells[i], 2 * sizeof(char));
     u->cells[i] = '\0';
-
-    // for (j = 0; j < i; j++)
-    // {
-    //     printf("%d. %s\n", j, u->cells[j]);
-    // }
 }
 
 void write_out_file(FILE *outfile, struct universe *u)
 {
-    
+    printf("Writing to file!\n");
+    for (int i =0; i<u->r; i++) {
+        fputs(u->cells[i], outfile);
+    }
 }
