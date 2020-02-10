@@ -36,7 +36,9 @@ void free_cells(int r, struct universe *v)
     for (int i = 0; i < r; i++)
     {
         free(v->cells[i]);
+        v->cells[i] = NULL; // Best practice
     }
     free(v->cells);
+    v->cells = NULL;
     printf("Freed memory!\n");
 }
