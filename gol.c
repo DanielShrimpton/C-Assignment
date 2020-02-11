@@ -116,3 +116,74 @@ int is_alive(struct universe *u, int column, int row)
         return 0;
     }
 }
+
+int will_be_alive(struct universe *u, int column, int row)
+{
+    // column -= 1;
+    // row -= 1;
+    int k = 0;
+    int count = 0;
+    int alive = is_alive(u, column, row);
+    int neighbors[8];
+    int temp1, temp2;
+    for (int i = -1; i < 2; i++)
+    {
+        for (int j = -1; j < 2; j++)
+        {
+            if (!(i == 0 && j == 0))
+            {
+                temp1 = column + i;
+                temp2 = row + j;
+                if ((temp1 < 1) | (temp1 > u->c))
+                {
+                    neighbors[k] = 0;
+                }
+                else if ((temp2 < 1) | (temp2 > u->r))
+                {
+                    neighbors[k] = 0;
+                }
+                else
+                {
+                    neighbors[k] = is_alive(u, temp1, temp2);
+                }
+                k++;
+            }
+            
+        }
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+        if (count == 4)
+        {
+            return 0;
+        }
+        if (neighbors[i] == 1)
+        {
+            count++;
+        }
+    }
+
+    if (alive == 1)
+    {
+        if (count < 2)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        if (count == 3)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+}
