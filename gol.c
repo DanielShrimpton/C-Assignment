@@ -18,7 +18,7 @@ void main()
     // while (v.cells[0][v.c] != '\n')
     while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
     {
-        v.c++;        
+        v.c++;
     }
     while ((v.cells[v.r] != NULL) && (*v.cells[v.r] != '\0'))
     {
@@ -70,13 +70,16 @@ void read_in_file(FILE *infile, struct universe *u)
             u->cells[i] = (char *)realloc(u->cells[i], size * sizeof(char));
             first = false;
         }
-        if (size != u->c + 1) {
+        if (size != u->c + 1)
+        {
             printf("Poorly formatted file!\n");
             free_cells(u);
             exit(1);
         }
-        for (int k=0; k<size; k++) {
-            if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n'))) {
+        for (int k = 0; k < size; k++)
+        {
+            if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n')))
+            {
                 printf("%c\n", u->cells[i][k]);
                 printf("Poorly formatted file!\n");
                 free_cells(u);
@@ -96,17 +99,20 @@ void read_in_file(FILE *infile, struct universe *u)
 void write_out_file(FILE *outfile, struct universe *u)
 {
     printf("Writing to file!\n");
-    for (int i =0; i<u->r; i++) {
+    for (int i = 0; i < u->r; i++)
+    {
         fputs(u->cells[i], outfile);
     }
 }
 
 int is_alive(struct universe *u, int column, int row)
 {
-    if (u->cells[row-1][column-1] == '*')
+    if (u->cells[row - 1][column - 1] == '*')
     {
         return 1;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
