@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,12 +10,14 @@ void free_cells(struct universe *v);
 void main()
 {
     struct universe v;
+    v.r = 0, v.c = 0;
+    v.curr = 0.0f, v.tot = 0.0f;
+    v.c_alive = 0, v.t_alive = 0;
     FILE *fp;
-    fp = fopen("glider_torus.txt", "r");
+    fp = fopen("glider.txt", "r");
     read_in_file(fp, &v);
     fclose(fp);
-    v.r = 0;
-    v.c = 0;
+
     // while (v.cells[0][v.c] != '\n')
     while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
     {
@@ -25,6 +28,14 @@ void main()
         v.r++;
     }
     printf("Rows: %d, Columns: %d\n", v.r, v.c);
+
+    evolve(&v, will_be_alive_torus);
+    evolve(&v, will_be_alive_torus);
+    evolve(&v, will_be_alive_torus);
+    evolve(&v, will_be_alive_torus);
+    evolve(&v, will_be_alive_torus);
+
+    print_statistics(&v);
 
     FILE *out_file_pointer;
     out_file_pointer = fopen("gilder-out.txt", "w");
@@ -85,15 +96,22 @@ void read_in_file(FILE *infile, struct universe *u)
                 free_cells(u);
                 exit(1);
             }
+            if (u->cells[i][k] == '*')
+            {
+                u->c_alive++;
+                u->t_alive++;
+            }
         }
         // u->cells[i][strlen(u->cells[i]) - 1] = '\0';
         u->cells = (char **)realloc(u->cells, (i + 2) * sizeof(char *));
         u->cells[i + 1] = (char *)calloc(size, sizeof(char));
         i++;
     }
-
+    u->r++;
     u->cells[i] = (char *)realloc(u->cells[i], 2 * sizeof(char));
     u->cells[i] = '\0';
+    u->curr = u->c * u->r;
+    u->tot = u->c * u->r;
 }
 
 void write_out_file(FILE *outfile, struct universe *u)
@@ -146,7 +164,6 @@ int will_be_alive(struct universe *u, int column, int row)
                 }
                 k++;
             }
-            
         }
     }
 
@@ -205,7 +222,7 @@ int will_be_alive_torus(struct universe *u, int column, int row)
                 {
                     temp1 = u->c;
                 }
-                else if  (temp1 > u->c)
+                else if (temp1 > u->c)
                 {
                     temp1 = 1;
                 }
@@ -220,7 +237,6 @@ int will_be_alive_torus(struct universe *u, int column, int row)
                 neighbors[k] = is_alive(u, temp1, temp2);
                 k++;
             }
-            
         }
     }
 
@@ -258,4 +274,56 @@ int will_be_alive_torus(struct universe *u, int column, int row)
             return 0;
         }
     }
+}
+
+void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row))
+{
+    printf("Evolving\n");
+    struct universe n;
+    n.c_alive = 0;
+    n.r = u->r;
+    n.c = u->c;
+    (&n)->cells = (char **)calloc(n.r, sizeof(char *));
+    for (int i = 0; i < n.r; i++)
+    {
+        (&n)->cells[i] = (char *)calloc(n.c, sizeof(char));
+    }
+    int i = 0, j = 0;
+    for (i = 0; i < n.r; i++)
+    {
+        for (j = 0; j < n.c; j++)
+        {
+            int will = rule(u, j + 1, i + 1);
+            char cell[1];
+            if (will == 1)
+            {
+                cell[0] = '*';
+                n.c_alive++;
+            }
+            else
+            {
+                cell[0] = '.';
+            }
+            (&n)->cells[i][j] = cell[0];
+        }
+    }
+    u->c_alive = n.c_alive;
+    u->t_alive += n.c_alive;
+    u->tot += u->curr;
+    for (i = 0; i < n.r; i++)
+    {
+        memcpy(u->cells[i], (&n)->cells[i], u->c + 1);
+        u->cells[i][u->c] = '\n';
+        free((&n)->cells[i]);
+    }
+    free((&n)->cells);
+}
+
+void print_statistics(struct universe *u)
+{
+    float curr, total;
+    curr = u->c_alive / u->curr;
+    total = u->t_alive / u->tot;
+    printf("%.3f%% of cells currently alive\n", curr);
+    printf("%.3f%% of cells alive on average\n", total);
 }

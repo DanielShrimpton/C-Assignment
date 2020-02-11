@@ -2,7 +2,10 @@ struct universe
 {
     /*Put some appropriate things here*/
     char **cells;
-    int r, c;
+    int r, c;  // Number of rows and columns
+    float curr, tot;  // ints for current/total number of cells
+    float c_alive;  // int to store the current number of alive cells
+    float t_alive;  // int to store the total number of alive cells
 };
 
 /*Do not modify the next seven lines*/
