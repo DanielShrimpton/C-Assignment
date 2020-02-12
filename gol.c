@@ -7,45 +7,46 @@
 
 void free_cells(struct universe *v);
 
-void main()
-{
-    struct universe v;
-    v.r = 0, v.c = 0;
-    v.curr = 0.0f, v.tot = 0.0f;
-    v.c_alive = 0, v.t_alive = 0;
-    FILE *fp;
-    fp = fopen("glider.txt", "r");
-    read_in_file(fp, &v);
-    fclose(fp);
+// int main()
+// {
+//     // struct universe v;
+//     // v.r = 0, v.c = 0;
+//     // v.curr = 0.0f, v.tot = 0.0f;
+//     // v.c_alive = 0, v.t_alive = 0;
+//     // FILE *fp;
+//     // fp = fopen("glider.txt", "r");
+//     // read_in_file(fp, &v);
+//     // fclose(fp);
 
-    // while (v.cells[0][v.c] != '\n')
-    while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
-    {
-        v.c++;
-    }
-    while ((v.cells[v.r] != NULL) && (*v.cells[v.r] != '\0'))
-    {
-        v.r++;
-    }
-    printf("Rows: %d, Columns: %d\n", v.r, v.c);
+//     // while (v.cells[0][v.c] != '\n')
+//     // while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
+//     // {
+//     //     v.c++;
+//     // }
+//     // while ((v.cells[v.r] != NULL) && (*v.cells[v.r] != '\0'))
+//     // {
+//     //     v.r++;
+//     // }
+//     // printf("Rows: %d, Columns: %d\n", v.r, v.c);
 
-    evolve(&v, will_be_alive_torus);
-    evolve(&v, will_be_alive_torus);
-    evolve(&v, will_be_alive_torus);
-    evolve(&v, will_be_alive_torus);
-    evolve(&v, will_be_alive_torus);
+//     // evolve(&v, will_be_alive_torus);
+//     // evolve(&v, will_be_alive_torus);
+//     // evolve(&v, will_be_alive_torus);
+//     // evolve(&v, will_be_alive_torus);
+//     // evolve(&v, will_be_alive_torus);
 
-    print_statistics(&v);
+//     // print_statistics(&v);
 
-    FILE *out_file_pointer;
-    out_file_pointer = fopen("gilder-out.txt", "w");
-    write_out_file(out_file_pointer, &v);
-    fclose(out_file_pointer);
+//     // FILE *out_file_pointer;
+//     // out_file_pointer = fopen("gilder-out.txt", "w");
+//     // write_out_file(out_file_pointer, &v);
+//     // fclose(out_file_pointer);
 
-    free_cells(&v);
+//     // free_cells(&v);
 
-    exit(0);
-}
+//     // exit(0);
+//     return 0;
+// }
 
 void free_cells(struct universe *v)
 {
@@ -63,12 +64,15 @@ void free_cells(struct universe *v)
 
 void read_in_file(FILE *infile, struct universe *u)
 {
+    u->c =0, u->r = 0;
+    u->curr = 0.0f, u->tot = 0.0f;
+    u->c_alive = 0, u->t_alive = 0;
     u->cells = (char **)calloc(1, sizeof(char *));
     for (int i = 0; i < 1; i++)
     {
         u->cells[i] = (char *)calloc(512, sizeof(char));
     }
-    int i = 0, j = 0;
+    int i = 0;
     int size;
     bool first = true;
     while (fgets(u->cells[i], 512, infile))
@@ -83,16 +87,16 @@ void read_in_file(FILE *infile, struct universe *u)
         }
         if (size != u->c + 1)
         {
-            printf("Poorly formatted file!\n");
+            printf("Poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
             free_cells(u);
             exit(1);
         }
         for (int k = 0; k < size; k++)
         {
-            if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n')))
+            if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n') | (u->cells[i][k] == '\r')))
             {
                 printf("%c\n", u->cells[i][k]);
-                printf("Poorly formatted file!\n");
+                printf("Poorly formatted file! Contains illegal character.\n");
                 free_cells(u);
                 exit(1);
             }

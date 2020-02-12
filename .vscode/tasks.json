@@ -28,6 +28,10 @@
             "label": "gcc build active file",
             "command": "/usr/bin/gcc",
             "args": [
+                "-Wall",
+                "-Wextra",
+                "-pedantic",
+                "-std=c11",
                 "-g",
                 "${file}",
                 "-o",
