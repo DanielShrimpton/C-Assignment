@@ -95,7 +95,7 @@ void read_in_file(FILE *infile, struct universe *u)
         {
             if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n') | (u->cells[i][k] == '\r')))
             {
-                printf("%c\n", u->cells[i][k]);
+                // printf("%c\n", u->cells[i][k]);
                 printf("Poorly formatted file! Contains illegal character.\n");
                 free_cells(u);
                 exit(1);
@@ -120,11 +120,11 @@ void read_in_file(FILE *infile, struct universe *u)
 
 void write_out_file(FILE *outfile, struct universe *u)
 {
-    printf("Writing to file!\n");
     for (int i = 0; i < u->r; i++)
     {
         fputs(u->cells[i], outfile);
     }
+    printf("Written successfully!\n");
 }
 
 int is_alive(struct universe *u, int column, int row)
@@ -282,7 +282,7 @@ int will_be_alive_torus(struct universe *u, int column, int row)
 
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row))
 {
-    printf("Evolving\n");
+    // printf("Evolving\n");
     struct universe n;
     n.c_alive = 0;
     n.r = u->r;
