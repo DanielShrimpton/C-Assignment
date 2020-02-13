@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -64,7 +63,7 @@ void free_cells(struct universe *v)
 
 void read_in_file(FILE *infile, struct universe *u)
 {
-    u->c =0, u->r = 0;
+    u->c = 0, u->r = 0;
     u->curr = 0.0f, u->tot = 0.0f;
     u->c_alive = 0, u->t_alive = 0;
     u->cells = (char **)calloc(1, sizeof(char *));

@@ -2,8 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include"gol.h"
-// #include "gol.c"
+#include "gol.h"
 int main(int argc, char *argv[])
 {
     char command[10];
