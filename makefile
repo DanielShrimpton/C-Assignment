@@ -1,15 +1,17 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -pedantic -std=c11 -I.
-DEPS = gol.h
-OBJ = gameoflife.o gol.o
+CFLAGS=-Wall -Wextra -pedantic -std=c11
+NAME = gameoflife
 
-%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+all: gameoflife.c libgol.so
+	$(CC) $(CFLAGS) -o $(NAME) gameoflife.c -L. -lgol -Wl,-rpath=.
 
-gameoflife2: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+libgol.so: gol.o
+	$(CC) $(CFLAGS) -shared gol.o -o libgol.so
+
+gol.o: gol.c gol.h
+	$(CC) $(CFLAGS) -c gol.c -fPIC
 
 .PHONY: clean
 
 clean:
-	rm -f ./*.o *~ core ./*~
+	rm -f ./*.o ./*.so ./$(NAME) *~ core ./*~
