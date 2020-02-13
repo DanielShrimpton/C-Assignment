@@ -124,7 +124,7 @@ void write_out_file(FILE *outfile, struct universe *u)
     {
         fputs(u->cells[i], outfile);
     }
-    printf("Written successfully!\n");
+    // printf("Written successfully!\n");
 }
 
 int is_alive(struct universe *u, int column, int row)
