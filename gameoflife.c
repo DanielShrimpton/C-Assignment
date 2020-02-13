@@ -2,12 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include"gol.h"
-// #include "gol.c"
+// #include"gol.h"
+#include "gol.c"
 int main(int argc, char *argv[])
 {
     char command[10];
-    bool stats = false, torus = false;
+    bool in = false, out_ = false, stats = false, torus = false;
     struct universe v;
     FILE *fp;
     FILE *op;
@@ -25,17 +25,19 @@ int main(int argc, char *argv[])
             {
             case 'i':
                 // strcpy(command, "input");
-                strcpy(in_name, argv[i+1]);
+                strcpy(in_name, argv[i + 1]);
+                in = true;
                 i++;
                 break;
             case 'o':
                 strcpy(command, "output");
-                strcpy(out, argv[i+1]);
+                strcpy(out, argv[i + 1]);
+                out_ = true;
                 i++;
                 break;
             case 'g':
                 strcpy(command, "gens");
-                gens = strtol(argv[i+1], NULL, 10);
+                gens = strtol(argv[i + 1], NULL, 10);
                 i++;
                 break;
             case 's':
@@ -52,22 +54,31 @@ int main(int argc, char *argv[])
             }
         }
     }
-    
+
     // fgets(name, sizeof(name), stdin);
     // char *newline = strchr(name, '\n');
     // if (newline)
     // {
     //     *newline = '\0';
     // }
-    fp = fopen(in_name, "r");
-    read_in_file(fp, &v);
-    
-    for (int i = 0; i<gens; i++)
+    if (in)
     {
-        if (torus) 
+        fp = fopen(in_name, "r");
+        read_in_file(fp, &v);
+    }
+    else
+    {
+        read_in_file(stdin, &v);
+    }
+
+    for (int i = 0; i < gens; i++)
+    {
+        if (torus)
         {
             evolve(&v, will_be_alive_torus);
-        } else {
+        }
+        else
+        {
             evolve(&v, will_be_alive);
         }
     }
@@ -75,7 +86,15 @@ int main(int argc, char *argv[])
     {
         print_statistics(&v);
     }
-    op = fopen(out, "w");
-    write_out_file(op, &v);
+    if (out_)
+    {
+        op = fopen(out, "w");
+        write_out_file(op, &v);
+    }
+    else
+    {
+        write_out_file(stdout, &v);
+    }
+
     return 0;
 }
