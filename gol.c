@@ -20,15 +20,32 @@ void read_in_file(FILE *infile, struct universe *u)
     bool first = true;
     while (fgets(u->cells[i], 512, infile))
     {
+        if (u->cells[i][strlen(u->cells[i]) - 2] == '\r')
+        {
+            u->cells[i][strlen(u->cells[i]) - 1] = '\0';
+            u->cells[i][strlen(u->cells[i]) - 1] = '\0';
+        }
+        if (u->cells[i][strlen(u->cells[i]) - 1] == '\n')
+        {
+            u->cells[i][strlen(u->cells[i]) - 1] = '\0';
+            if ((strstr(u->cells[i], "\n")) != NULL) 
+            {
+                printf("newlines");
+            }
+            if ((strstr(u->cells[i], "\r")) != NULL)
+            {
+                printf("returns");
+            }
+        }
         u->r = i;
         size = strlen(u->cells[i]);
         if (first)
         {
-            u->c = size - 1;
+            u->c = size;
             u->cells[i] = (char *)realloc(u->cells[i], size * sizeof(char));
             first = false;
         }
-        if (size != u->c + 1)
+        if (size != u->c)
         {
             fprintf(stderr, "gameoflife: Poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
             exit(1);
@@ -46,7 +63,7 @@ void read_in_file(FILE *infile, struct universe *u)
                 u->t_alive++;
             }
         }
-        // u->cells[i][strlen(u->cells[i]) - 1] = '\0';
+        
         u->cells = (char **)realloc(u->cells, (i + 2) * sizeof(char *));
         u->cells[i + 1] = (char *)calloc(size, sizeof(char));
         i++;
