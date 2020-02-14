@@ -2,64 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "gol.h"
-
-void free_cells(struct universe *v);
-
-// int main()
-// {
-//     // struct universe v;
-//     // v.r = 0, v.c = 0;
-//     // v.curr = 0.0f, v.tot = 0.0f;
-//     // v.c_alive = 0, v.t_alive = 0;
-//     // FILE *fp;
-//     // fp = fopen("glider.txt", "r");
-//     // read_in_file(fp, &v);
-//     // fclose(fp);
-
-//     // while (v.cells[0][v.c] != '\n')
-//     // while ((v.cells[0][v.c] == '.') | (v.cells[0][v.c] == '*'))
-//     // {
-//     //     v.c++;
-//     // }
-//     // while ((v.cells[v.r] != NULL) && (*v.cells[v.r] != '\0'))
-//     // {
-//     //     v.r++;
-//     // }
-//     // printf("Rows: %d, Columns: %d\n", v.r, v.c);
-
-//     // evolve(&v, will_be_alive_torus);
-//     // evolve(&v, will_be_alive_torus);
-//     // evolve(&v, will_be_alive_torus);
-//     // evolve(&v, will_be_alive_torus);
-//     // evolve(&v, will_be_alive_torus);
-
-//     // print_statistics(&v);
-
-//     // FILE *out_file_pointer;
-//     // out_file_pointer = fopen("gilder-out.txt", "w");
-//     // write_out_file(out_file_pointer, &v);
-//     // fclose(out_file_pointer);
-
-//     // free_cells(&v);
-
-//     // exit(0);
-//     return 0;
-// }
-
-void free_cells(struct universe *v)
-{
-    for (int i = 0; i < v->r; i++)
-    {
-        free(v->cells[i]);
-        v->cells[i] = NULL; // Best practice
-    }
-    free(v->cells);
-    v->cells = NULL;
-    v->c = 0;
-    v->r = 0;
-    printf("Freed memory!\n");
-}
 
 void read_in_file(FILE *infile, struct universe *u)
 {
@@ -86,17 +30,14 @@ void read_in_file(FILE *infile, struct universe *u)
         }
         if (size != u->c + 1)
         {
-            printf("Poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
-            free_cells(u);
+            fprintf(stderr, "gameoflife: Poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
             exit(1);
         }
         for (int k = 0; k < size; k++)
         {
             if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n') | (u->cells[i][k] == '\r')))
             {
-                // printf("%c\n", u->cells[i][k]);
-                printf("Poorly formatted file! Contains illegal character.\n");
-                free_cells(u);
+                fprintf(stderr, "gameoflife: Poorly formatted file! Contains illegal character: %c.\n", u->cells[i][k]);
                 exit(1);
             }
             if (u->cells[i][k] == '*')
