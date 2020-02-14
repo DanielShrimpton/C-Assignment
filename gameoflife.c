@@ -2,10 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "gol.h"
+
 int main(int argc, char *argv[])
 {
-    char command[10];
     bool in = false, out_ = false, stats = false, torus = false;
     struct universe v;
     FILE *fp;
@@ -14,43 +15,41 @@ int main(int argc, char *argv[])
     char out[100];
     int gens = 5;
 
-    for (int i = 0; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
-        // printf("%s\n", argv[i]);
         switch (argv[i][0])
         {
         case '-':
             switch (argv[i][1])
             {
             case 'i':
-                // strcpy(command, "input");
                 strcpy(in_name, argv[i + 1]);
                 in = true;
                 i++;
                 break;
             case 'o':
-                strcpy(command, "output");
                 strcpy(out, argv[i + 1]);
                 out_ = true;
                 i++;
                 break;
             case 'g':
-                strcpy(command, "gens");
                 gens = strtol(argv[i + 1], NULL, 10);
                 i++;
                 break;
             case 's':
-                strcpy(command, "stats");
                 stats = true;
                 break;
             case 't':
-                strcpy(command, "torus");
                 torus = true;
                 break;
             default:
-                printf("Invalid argument!\n");
+                fprintf(stderr, "gameoflife: option %s is unknown\n", argv[i]);
                 exit(1);
             }
+            break;
+        default:
+            fprintf(stderr, "gameoflife: option %s is unknown\n", argv[i]);
+            exit(1);
         }
     }
 
@@ -62,8 +61,14 @@ int main(int argc, char *argv[])
     // }
     if (in)
     {
-        fp = fopen(in_name, "r");
-        read_in_file(fp, &v);
+        if (access(in_name, F_OK) != -1) {
+            fp = fopen(in_name, "r");
+            read_in_file(fp, &v);
+        } else {
+            fprintf(stderr, "gameoflife: the file '%s' does not exist\n", in_name);
+            exit(1);
+        }
+        
     }
     else
     {
@@ -87,8 +92,30 @@ int main(int argc, char *argv[])
     }
     if (out_)
     {
-        op = fopen(out, "w");
-        write_out_file(op, &v);
+        if (access(out, F_OK) == -1) {
+            op = fopen(out, "w");
+            write_out_file(op, &v);
+        } else {
+            char ans[1];
+            while ((ans[0] != 'y') | (ans[0] != 'n'))
+            {
+                printf("%c", ans[0]);
+                if (ans[0] != '\n') {
+                    printf("The file '%s' already exists, are you sure you want to replace it? (y/n): ", out);
+                    fgets(ans, 2, stdin);
+                }
+            }
+            switch (ans[0]) {
+                case 'y':
+                    op = fopen(out, "w");
+                    write_out_file(op, &v);
+                    break;
+                case 'n':
+                    write_out_file(stdout, &v);
+                    break;
+            }
+        }
+        
     }
     else
     {
