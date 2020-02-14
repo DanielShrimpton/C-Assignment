@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
                 break;
             case 'g':
                 gens = strtol(argv[i + 1], NULL, 10);
+                if (gens < 1) {
+                    fprintf(stderr, "gameoflife: please enter a valid, positive integer for number of generations\n");
+                    exit(1);
+                }
                 i++;
                 break;
             case 's':
