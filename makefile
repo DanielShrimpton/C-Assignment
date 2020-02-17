@@ -2,8 +2,11 @@ CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -std=c11
 NAME = gameoflife
 
-all: gameoflife.c libgol.so
-	$(CC) $(CFLAGS) -o $(NAME) gameoflife.c -L. -lgol -Wl,-rpath=.
+all: gameoflife.o libgol.so
+	$(CC) $(CFLAGS) -o $(NAME) gameoflife.o -L. -lgol -Wl,-rpath=.
+
+gameoflife.o: gameoflife.c gol.h
+	$(CC) $(CFLAGS) -c gameoflife.c -fPIC
 
 libgol.so: gol.o
 	$(CC) $(CFLAGS) -shared gol.o -o libgol.so
