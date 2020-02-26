@@ -18,8 +18,13 @@ void read_in_file(FILE *infile, struct universe *u)
     int i = 0;
     int size;
     bool first = true;
-    while (fgets(u->cells[i], 512, infile))
+    while (fgets(u->cells[i], 515, infile))
     {
+        if ((strchr(u->cells[i], '.') == NULL) &&(strchr(u->cells[i], '*') == NULL))
+        {
+            fprintf(stderr, "gameoflife: Bad line length! Too long (max length is 512).\n");
+            exit(1);
+        }
         if (u->cells[i][strlen(u->cells[i]) - 2] == '\r')
         {
             u->cells[i][strlen(u->cells[i]) - 1] = '\0';
