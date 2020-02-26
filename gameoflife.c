@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include "gol.h"
 
 int main(int argc, char *argv[])
@@ -23,27 +22,37 @@ int main(int argc, char *argv[])
             switch (argv[i][1])
             {
             case 'i':
-            if (!in)
-            {
-                strcpy(in_name, argv[i + 1]);
-                in = true;
-                i++;
-                break;
-            }
-            else 
-            {
-                char temp[100];
-                strcpy(temp, argv[i + 1]);
-                if (strcmp(in_name, temp) != 0) 
+                if ((i + 2) > argc)
                 {
-                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                    fprintf(stderr, "gameoflife: not enough arguments supplied.\n");
                     exit(1);
                 }
-                i++;
-                break;
-            }
-                
+                if (!in)
+                {
+                    strcpy(in_name, argv[i + 1]);
+                    in = true;
+                    i++;
+                    break;
+                }
+                else
+                {
+                    char temp[100];
+                    strcpy(temp, argv[i + 1]);
+                    if (strcmp(in_name, temp) != 0)
+                    {
+                        fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
+                        exit(1);
+                    }
+                    i++;
+                    break;
+                }
+
             case 'o':
+                if ((i + 2) > argc)
+                {
+                    fprintf(stderr, "gameoflife: not enough arguments supplied.\n");
+                    exit(1);
+                }
                 if (!out_)
                 {
                     strcpy(out, argv[i + 1]);
@@ -57,7 +66,7 @@ int main(int argc, char *argv[])
                     strcpy(temp, argv[i + 1]);
                     if (strcmp(out, temp) != 0)
                     {
-                        fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                        fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
                         exit(1);
                     }
                     i++;
@@ -65,6 +74,11 @@ int main(int argc, char *argv[])
                 }
 
             case 'g':
+                if ((i + 2) > argc)
+                    {
+                        fprintf(stderr, "gameoflife: not enough arguments supplied.\n");
+                        exit(1);
+                    }
                 if (!gens_)
                 {
                     gens_ = true;
@@ -83,7 +97,7 @@ int main(int argc, char *argv[])
                     temp = strtol(argv[i + 1], NULL, 10);
                     if (!(temp == gens))
                     {
-                        fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                        fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
                         exit(1);
                     }
                     i++;
@@ -98,7 +112,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                    fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
                     exit(1);
                 }
 
@@ -110,7 +124,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                    fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
                     exit(1);
                 }
 
@@ -133,9 +147,9 @@ int main(int argc, char *argv[])
     // }
     if (in)
     {
-        if (access(in_name, F_OK) != -1)
+        fp = fopen(in_name, "r");
+        if (fp != NULL)
         {
-            fp = fopen(in_name, "r");
             read_in_file(fp, &v);
         }
         else
@@ -143,6 +157,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "gameoflife: the file '%s' does not exist\n", in_name);
             exit(1);
         }
+        fclose(fp);
     }
     else
     {
@@ -166,14 +181,11 @@ int main(int argc, char *argv[])
     }
     if (out_)
     {
-        if (access(out, F_OK) == -1)
+        FILE *cp;
+        cp = fopen(out, "r");
+        if (cp != NULL)
         {
-            op = fopen(out, "w");
-            write_out_file(op, &v);
-            return 0;
-        }
-        else
-        {
+            fclose(cp);
             if (strstr(out, ".txt\0") != NULL)
             {
                 op = fopen(out, "w");
@@ -186,6 +198,12 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "gameoflife: cannot overwrite non-text files. Printed to screen instead\n");
                 exit(1);
             }
+        }
+        else
+        {
+            op = fopen(out, "w");
+            write_out_file(op, &v);
+            return 0;
         }
     }
     else
