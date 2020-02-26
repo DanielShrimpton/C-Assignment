@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-    bool in = false, out_ = false, stats = false, torus = false;
+    bool in = false, out_ = false, stats = false, torus = false, gens_ = false;
     struct universe v;
     FILE *fp;
     FILE *op;
@@ -23,29 +23,97 @@ int main(int argc, char *argv[])
             switch (argv[i][1])
             {
             case 'i':
+            if (!in)
+            {
                 strcpy(in_name, argv[i + 1]);
                 in = true;
                 i++;
                 break;
-            case 'o':
-                strcpy(out, argv[i + 1]);
-                out_ = true;
-                i++;
-                break;
-            case 'g':
-                gens = strtol(argv[i + 1], NULL, 10);
-                if (gens < 1) {
-                    fprintf(stderr, "gameoflife: please enter a valid, positive integer for number of generations\n");
+            }
+            else 
+            {
+                char temp[100];
+                strcpy(temp, argv[i + 1]);
+                if (strcmp(in_name, temp) != 0) 
+                {
+                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
                     exit(1);
                 }
                 i++;
                 break;
+            }
+                
+            case 'o':
+                if (!out_)
+                {
+                    strcpy(out, argv[i + 1]);
+                    out_ = true;
+                    i++;
+                    break;
+                }
+                else
+                {
+                    char temp[100];
+                    strcpy(temp, argv[i + 1]);
+                    if (strcmp(out, temp) != 0)
+                    {
+                        fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                        exit(1);
+                    }
+                    i++;
+                    break;
+                }
+
+            case 'g':
+                if (!gens_)
+                {
+                    gens_ = true;
+                    gens = strtol(argv[i + 1], NULL, 10);
+                    if (gens < 1)
+                    {
+                        fprintf(stderr, "gameoflife: please enter a valid, positive integer for number of generations\n");
+                        exit(1);
+                    }
+                    i++;
+                    break;
+                }
+                else
+                {
+                    int temp;
+                    temp = strtol(argv[i + 1], NULL, 10);
+                    if (!(temp == gens))
+                    {
+                        fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                        exit(1);
+                    }
+                    i++;
+                    break;
+                }
+
             case 's':
-                stats = true;
-                break;
+                if (!stats)
+                {
+                    stats = true;
+                    break;
+                }
+                else
+                {
+                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                    exit(1);
+                }
+
             case 't':
-                torus = true;
-                break;
+                if (!torus)
+                {
+                    torus = true;
+                    break;
+                }
+                else
+                {
+                    fprintf(stderr, "gameoflife: multiple duplicate flags: %s.\n", argv[i]);
+                    exit(1);
+                }
+
             default:
                 fprintf(stderr, "gameoflife: option %s is unknown\n", argv[i]);
                 exit(1);
