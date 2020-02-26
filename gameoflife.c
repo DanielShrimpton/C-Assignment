@@ -105,28 +105,12 @@ int main(int argc, char *argv[])
                 }
 
             case 's':
-                if (!stats)
-                {
-                    stats = true;
-                    break;
-                }
-                else
-                {
-                    fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
-                    exit(1);
-                }
+                stats = true;
+                break;
 
             case 't':
-                if (!torus)
-                {
-                    torus = true;
-                    break;
-                }
-                else
-                {
-                    fprintf(stderr, "gameoflife: conflicting duplicate flags: %s.\n", argv[i]);
-                    exit(1);
-                }
+                torus = true;
+                break;
 
             default:
                 fprintf(stderr, "gameoflife: option %s is unknown\n", argv[i]);
