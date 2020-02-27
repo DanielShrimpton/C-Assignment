@@ -22,25 +22,21 @@ void read_in_file(FILE *infile, struct universe *u)
     {
         if ((strchr(u->cells[i], '.') == NULL) &&(strchr(u->cells[i], '*') == NULL))
         {
-            fprintf(stderr, "gameoflife: Bad line length! Too long (max length is 512).\n");
+            fprintf(stderr, "gameoflife: bad line length! Too long (max length is 512).\n");
             exit(1);
-        }
-        if (u->cells[i][strlen(u->cells[i]) - 2] == '\r')
-        {
-            u->cells[i][strlen(u->cells[i]) - 1] = '\0';
-            u->cells[i][strlen(u->cells[i]) - 1] = '\0';
         }
         if (u->cells[i][strlen(u->cells[i]) - 1] == '\n')
         {
             u->cells[i][strlen(u->cells[i]) - 1] = '\0';
-            if ((strstr(u->cells[i], "\n")) != NULL) 
-            {
-                printf("newlines");
-            }
             if ((strstr(u->cells[i], "\r")) != NULL)
             {
-                printf("returns");
+                u->cells[i][strlen(u->cells[i]) - 1] = '\0';
             }
+        }
+        else
+        {
+            fprintf(stderr, "gameoflife: poorly formatted file! Please include empty line at end.\n");
+            exit(1);
         }
         u->r = i;
         size = strlen(u->cells[i]);
@@ -52,14 +48,14 @@ void read_in_file(FILE *infile, struct universe *u)
         }
         if (size != u->c)
         {
-            fprintf(stderr, "gameoflife: Poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
+            fprintf(stderr, "gameoflife: poorly formatted file! Line lengths inconsistent. (%d, %d)\n", size, u->c);
             exit(1);
         }
         for (int k = 0; k < size; k++)
         {
             if (!((u->cells[i][k] == '.') | (u->cells[i][k] == '*') | (u->cells[i][k] == '\n') | (u->cells[i][k] == '\r')))
             {
-                fprintf(stderr, "gameoflife: Poorly formatted file! Contains illegal character: %c.\n", u->cells[i][k]);
+                fprintf(stderr, "gameoflife: poorly formatted file! Contains illegal character: %c.\n", u->cells[i][k]);
                 exit(1);
             }
             if (u->cells[i][k] == '*')
