@@ -170,18 +170,25 @@ int main(int argc, char *argv[])
         if (cp != NULL)
         {
             fclose(cp);
-            if (strstr(out, ".txt\0") != NULL)
-            {
-                op = fopen(out, "w");
-                write_out_file(op, &v);
-                return 0;
-            }
-            else
-            {
-                write_out_file(stdout, &v);
-                fprintf(stderr, "gameoflife: cannot overwrite non-text files. Printed to screen instead\n");
-                exit(1);
-            }
+
+            // Getting rid of file type checking to stop overwriting of non text files
+
+            // if (strstr(out, ".txt\0") != NULL)
+            // {
+            //     op = fopen(out, "w");
+            //     write_out_file(op, &v);
+            //     return 0;
+            // }
+            // else
+            // {
+            //     write_out_file(stdout, &v);
+            //     fprintf(stderr, "gameoflife: cannot overwrite non-text files. Printed to screen instead\n");
+            //     exit(1);
+            // }
+            
+            op = fopen(out, "w");
+            write_out_file(op, &v);
+            return 0;
         }
         else
         {
