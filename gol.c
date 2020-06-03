@@ -131,13 +131,13 @@ int will_be_alive(struct universe *u, int column, int row)
 
     for (int i = 0; i < 8; i++)
     {
-        if (count == 4)
-        {
-            return 0;
-        }
         if (neighbors[i] == 1)
         {
             count++;
+        }
+        if (count == 4)
+        {
+            return 0;
         }
     }
 
