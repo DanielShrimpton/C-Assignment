@@ -23,5 +23,17 @@ input from the command line, which is terminated with `ctrl + D`.
 
 `-s` print statistics. 
 
-### universe files
+### Universe files
 Move any text file into the directory with the `gameoflife` executable to be able to use it. 
+
+For them to be usable, they must be in the format of `.` for a dead cell and `*` for an alive cell. Each line must 
+contain the same number of columns/characters and the final line must be an empty line, e.g.
+```
+......
+.*..*.
+.*..*.
+.*..*.
+......
+
+# comment to illustrate empty line above, don't include this line
+```
